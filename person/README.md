@@ -23,7 +23,7 @@ Hazelcast and Mysql to service the CRUD operation of person entities.
 
  1. docker-compose up
  2. Hit http://localhost:9000/actuator/health to see if the application came up successfully.   
- 3. Use the post man collection to test the service.
+ 3. Use the post man collection(person-svc.postman_collection.json) to test the service.
  4. Use the token endpoint to create Auth token before using any other API, else APIs will throw 401.
 
 ## Security
