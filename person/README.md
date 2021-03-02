@@ -16,6 +16,7 @@
  - H2 In-memory Database
  - Spring Security
  - Spock - Unit Testing
+ - Maven
 
 ## How To Run
 I have leveraged the docker infrastructure for standing up the service which works in conjunction with keycloak, 
