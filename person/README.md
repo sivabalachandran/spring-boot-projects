@@ -40,8 +40,8 @@ Hazelcast and Mysql to service the CRUD operation of person entities.
 
 ## Documentation
 Added Swagger for documentation support. I have not exported the docs, but can be done.
-2. Explore APIs with http://localhost:9000/swagger-ui/
-3. Explore Docs with http://localhost:9000/v2/api-docs
+1. Explore APIs with http://localhost:9000/swagger-ui/
+2. Explore Docs with http://localhost:9000/v2/api-docs
 
 ## Production Ready Features
 1. Enabled Actuator
