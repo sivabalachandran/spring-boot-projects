@@ -1,0 +1,67 @@
+version: '2.1'
+
+services:
+  person-svc:
+    container_name: person
+    build: .
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - person-svc-net
+    ports:
+      - "9000:9000"
+    volumes:
+      - ./logs:/usr/local/logs
+      - ./config:/usr/local/config
+    depends_on:
+      keycloak:
+        condition: service_started
+
+  # $ mysql -uroot -h127.0.0.1 -p
+  mysql:
+    container_name: mysql
+    image: mysql:8.0.23
+    restart: on-failure
+    networks:
+      - person-svc-net
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./mysql:/docker-entrypoint-initdb.d
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootpwd
+      - MYSQL_DATABASE=person-db
+      - MYSQL_USER=user
+      - MYSQL_PASSWORD=pwd
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-uuser", "-ppwd", "-h", "localhost" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  keycloak:
+    image: jboss/keycloak:12.0.3
+    container_name: keycloak
+    command: -Dkeycloak.profile.feature.upload_scripts=enabled
+    environment:
+      - KEYCLOAK_USER=admin
+      - KEYCLOAK_PASSWORD=admin
+      - DB_ADDR=mysql
+      - DB_PORT=3306
+      - DB_DATABASE=person-db
+      - DB_USER=user
+      - DB_PASSWORD=pwd
+      - KEYCLOAK_IMPORT=/tmp/realm-export.json
+    volumes:
+      - ./keycloak:/tmp
+    ports:
+      - "8080:8080"
+    networks:
+      person-svc-net:
+        aliases:
+          - keycloak.mydomain.com
+    depends_on:
+      mysql:
+        condition: service_healthy
+networks:
+  person-svc-net:
