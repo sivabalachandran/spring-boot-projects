@@ -1,0 +1,234 @@
+{
+	"info": {
+		"_postman_id": "5f66318b-11d1-4182-a3ab-18e90713f8da",
+		"name": "person-svc",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Service Health",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{svc.host}}/actuator/health",
+					"host": [
+						"{{svc.host}}"
+					],
+					"path": [
+						"actuator",
+						"health"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Auth-Token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var responseJson = JSON.parse(responseBody);",
+							"pm.globals.set(\"bearer.token\", \"Bearer \" + responseJson.access_token);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "client_id",
+							"value": "person-svc-client",
+							"type": "text"
+						},
+						{
+							"key": "username",
+							"value": "user",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "password",
+							"type": "text"
+						},
+						{
+							"key": "grant_type",
+							"value": "password",
+							"type": "text"
+						},
+						{
+							"key": "client_secret",
+							"value": "f27e8d76-0db6-49d4-863e-e4c3555b1fde",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{keycloak.host}}/auth/realms/person-svc/protocol/openid-connect/token",
+					"host": [
+						"{{keycloak.host}}"
+					],
+					"path": [
+						"auth",
+						"realms",
+						"person-svc",
+						"protocol",
+						"openid-connect",
+						"token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{bearer.token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{svc.host}}/persons",
+					"host": [
+						"{{svc.host}}"
+					],
+					"path": [
+						"persons"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get person by Id",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{bearer.token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{svc.host}}/persons/1",
+					"host": [
+						"{{svc.host}}"
+					],
+					"path": [
+						"persons",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Save List of persons",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{bearer.token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "[\n    {\n        \"firstName\": \"Ramba\",\n        \"lastName\": \"Sivasubramanian\",\n        \"age\": 33,\n        \"favoriteColor\": \"Red\"\n    }\n]",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{svc.host}}/persons",
+					"host": [
+						"{{svc.host}}"
+					],
+					"path": [
+						"persons"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update List of persons",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{bearer.token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "[\n    {\n        \"id\": 1,\n        \"firstName\": \"Siva\",\n        \"lastName\": \"Balachandran\",\n        \"age\": 35,\n        \"favoriteColor\": \"Blue\"\n    },\n    {\n        \"id\": 2,\n        \"firstName\": \"Ramba\",\n        \"lastName\": \"Sivasubramanian\",\n        \"age\": 33,\n        \"favoriteColor\": \"Blue\"\n    },\n    {\n        \"id\": 3,\n        \"firstName\": \"Anush\",\n        \"lastName\": \"Sivasubramanian\",\n        \"age\": 6,\n        \"favoriteColor\": \"Gold\"\n    },\n    {\n        \"id\": 4,\n        \"firstName\": \"Aradhana\",\n        \"lastName\": \"Sivasubramanian\",\n        \"age\": 2,\n        \"favoriteColor\": \"Silver\"\n    }\n]",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{svc.host}}/persons",
+					"host": [
+						"{{svc.host}}"
+					],
+					"path": [
+						"persons"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete List of Persons by Ids",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{bearer.token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "[\n    1,2,3,4,5\n]",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{svc.host}}/persons",
+					"host": [
+						"{{svc.host}}"
+					],
+					"path": [
+						"persons"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
