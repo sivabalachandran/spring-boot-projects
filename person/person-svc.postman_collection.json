@@ -167,38 +167,6 @@
 			"response": []
 		},
 		{
-			"name": "Update List of persons",
-			"request": {
-				"method": "PUT",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "{{bearer.token}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "[\n    {\n        \"id\": 1,\n        \"firstName\": \"Siva\",\n        \"lastName\": \"Balachandran\",\n        \"age\": 35,\n        \"favoriteColor\": \"Blue\"\n    },\n    {\n        \"id\": 2,\n        \"firstName\": \"Ramba\",\n        \"lastName\": \"Sivasubramanian\",\n        \"age\": 33,\n        \"favoriteColor\": \"Blue\"\n    },\n    {\n        \"id\": 3,\n        \"firstName\": \"Anush\",\n        \"lastName\": \"Sivasubramanian\",\n        \"age\": 6,\n        \"favoriteColor\": \"Gold\"\n    },\n    {\n        \"id\": 4,\n        \"firstName\": \"Aradhana\",\n        \"lastName\": \"Sivasubramanian\",\n        \"age\": 2,\n        \"favoriteColor\": \"Silver\"\n    }\n]",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{svc.host}}/persons",
-					"host": [
-						"{{svc.host}}"
-					],
-					"path": [
-						"persons"
-					]
-				}
-			},
-			"response": []
-		},
-		{
 			"name": "Delete List of Persons by Ids",
 			"request": {
 				"method": "DELETE",
@@ -225,6 +193,105 @@
 					],
 					"path": [
 						"persons"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Patch by Id",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{bearer.token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": 1,\n    \"firstName\": \"User5\",\n    \"lastName\": \"Lastname2\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{svc.host}}/persons/1",
+					"host": [
+						"{{svc.host}}"
+					],
+					"path": [
+						"persons",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Patch a list",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{bearer.token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"1\": {\n\n    },\n    \"2\": {\n        \n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{svc.host}}/persons/",
+					"host": [
+						"{{svc.host}}"
+					],
+					"path": [
+						"persons",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Patch by Id",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{bearer.token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"firstName\": \"User5\",\n    \"lastName\": \"Lastname2\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{svc.host}}/persons/1",
+					"host": [
+						"{{svc.host}}"
+					],
+					"path": [
+						"persons",
+						"1"
 					]
 				}
 			},

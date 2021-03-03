@@ -95,43 +95,88 @@ class PersonServiceSpec extends Specification {
         result == [] as Set
     }
 
-    def 'Update record works as expected'() {
+    def 'Update record works as expected for a record that exists'() {
         given:
-        def request = personEntityWithDefaultAge(1, 'Siva', 'Balachandran')
+        def changes = ["firstName": "updated", "lastName": "updated", "age": 10, "favoriteColor": "Blue"]
 
         when:
-        def result = personSvc.update([request] as Set<PersonEntity>)
+        def result = personSvc.updateById(1, changes)
 
         then:
-        1 * personRepository.save(request) >> request
-        1 * personCache.put(request.id, request)
+        1 * personRepository.findById(1) >> Optional.of(personEntityWithDefaultAge(1, 'original', 'original'))
+        1 * personRepository.save(personEntity(1, "updated", "updated", 10, "Blue")) >>
+                personEntity(1, "updated", "updated", 10, "Blue")
+        1 * personCache.put(1, personEntity(1, "updated", "updated", 10, "Blue"))
 
         and:
-        result.size() == 1
+        result == 1
+    }
+
+    def 'Update record works as expected for a record that does not exists'() {
+        given:
+        def changes = ["firstName": "updated", "lastName": "updated", "age": 10, "favoriteColor": "Blue"]
+
+        when:
+        def result = personSvc.updateById(2, changes)
+
+        then:
+        1 * personRepository.findById(2) >> Optional.empty()
+
+        and:
+        result == null
+    }
+
+    def 'Updated record failed with Exception'() {
+        given:
+        def changes = ["firstName": "updated", "lastName": "updated", "age": 10, "favoriteColor": "Blue"]
+
+        when:
+        def result = personSvc.updateById(2, changes)
+
+        then:
+        1 * personRepository.findById(2) >> { throw new DataIntegrityViolationException('test') }
+        0 * personRepository.save(_)
+        0 * personCache.put(_, _)
+
+        and:
+        result == null
     }
 
     def 'Delete record works as expected'() {
-        given:
-        def request = [1]
-
         when:
-        def result = personSvc.delete(request as Set)
+        def result = personSvc.deleteById(1)
 
         then:
         1 * personRepository.deleteById(1)
         1 * personCache.evictIfPresent(1)
 
         and:
-        result.size() == 1
+        result == 1
+    }
+
+    def 'Delete record works as expected when exception is thrown'() {
+        when:
+        def result = personSvc.deleteById(1)
+
+        then:
+        1 * personRepository.deleteById(1) >> { throw new DataIntegrityViolationException('test') }
+        0 * personCache.put(_, _)
+
+        and:
+        result == null
     }
 
     static personEntityWithDefaultAge(Integer id, String firstName, String lastName) {
+        personEntity(id, firstName, lastName, 30, "Blue")
+    }
+
+    static personEntity(Integer id, String firstName, String lastName, int age, String favoriteColor) {
         PersonEntity.builder()
                 .withId(id)
                 .withFirstName(firstName)
                 .withLastName(lastName)
-                .withAge(30)
-                .withFavoriteColor("Blue")
+                .withAge(age)
+                .withFavoriteColor(favoriteColor)
                 .build()
     }
 

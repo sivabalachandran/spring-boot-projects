@@ -9,10 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -58,7 +55,11 @@ public class PersonController {
     @DeleteMapping("/persons")
     public ResponseEntity<Set<Integer>> delete(@RequestBody Set<Integer> idsToDelete) {
         Assert.notEmpty(idsToDelete, "entity id cannot be empty with delete API");
-        var succeededEntries = personService.delete(idsToDelete);
+        var succeededEntries = idsToDelete
+                .stream()
+                .map(personService::deleteById)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
         if (succeededEntries.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         } else {
@@ -66,18 +67,31 @@ public class PersonController {
         }
     }
 
-    @PutMapping("/persons")
-    public ResponseEntity<Set<PersonDto>> update(@RequestBody List<PersonDto> persons) {
-        Assert.notEmpty(persons, "persons collection cannot be empty with update API");
-        var personEntities = persons.stream()
-                .map(this::convertToEntity)
-                .collect(Collectors.toUnmodifiableSet());
+    @PatchMapping("/persons/{id}")
+    public ResponseEntity<Integer> patch(@PathVariable final Integer id, @RequestBody Map<String, Object> changes) {
+        Assert.notEmpty(changes, "changes collection cannot be empty with update API");
+        var succeededEntry = personService.updateById(id, changes);
+        if (succeededEntry != null) {
+            return new ResponseEntity<>(succeededEntry, HttpStatus.OK);
+        } else {
+            // keeping it simple here to throw 500 when the patch fails. This can be amended based on business rules.
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
-        var succeededEntries = personService.update(personEntities);
+    @PatchMapping("/persons/")
+    public ResponseEntity<Set<Integer>> patch(@RequestBody Map<Integer, Map<String, Object>> changes) {
+        Assert.notEmpty(changes, "changes collection cannot be empty with update API");
+        var succeededEntries = changes.entrySet()
+                .stream()
+                .map(entry -> personService.updateById(entry.getKey(), entry.getValue()))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+
         if (succeededEntries.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         } else {
-            return new ResponseEntity<>(convertEntities(succeededEntries), HttpStatus.OK);
+            return new ResponseEntity<>(succeededEntries, HttpStatus.OK);
         }
     }
 

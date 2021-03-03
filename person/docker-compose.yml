@@ -51,7 +51,7 @@ services:
       - DB_DATABASE=person-db
       - DB_USER=user
       - DB_PASSWORD=pwd
-      - KEYCLOAK_IMPORT=/tmp/realm-export.json
+      - KEYCLOAK_IMPORT=/tmp/person_svc_realm.json
     volumes:
       - ./keycloak:/tmp
     ports:

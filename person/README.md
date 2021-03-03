@@ -17,15 +17,23 @@
  - Spring Security
  - Spock - Unit Testing
  - Maven
+ - Lombok
 
 ## How To Run
 I have leveraged the docker infrastructure for standing up the service which works in conjunction with keycloak, 
 Hazelcast and Mysql to service the CRUD operation of person entities.
 
- 1. docker-compose up
- 2. Hit http://localhost:9000/actuator/health to see if the application came up successfully.   
- 3. Use the post man collection(person-svc.postman_collection.json) to test the service.
- 4. Use the token endpoint to create Auth token before using any other API, else APIs will throw 401.
+ 1. `./mvnw clean package(Linux)` or `mvnw clean package(Windows)`
+ 2. `docker-compose up`
+ 3. Hit http://localhost:9000/actuator/health to see if the application came up successfully.   
+ 4. Use the post man collection(person-svc.postman_collection.json) to test the service.
+ 5. Use the token endpoint to create Auth token before using any other API, else APIs will throw 401.
+
+The application is equipped to run without docker using H2 in-memory database.
+
+ 1. `./mvnw clean package(Linux)` or `mvnw clean package(Windows)`
+ 2.  When run as local, the apis are not guarded by authorization. 
+     This is for the ease of development.   
 
 ## Security
 1. The service is guarded by Spring security and Keycloak.

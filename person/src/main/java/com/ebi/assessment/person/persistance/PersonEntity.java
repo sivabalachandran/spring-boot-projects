@@ -5,18 +5,15 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.util.Assert;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import java.io.Serializable;
-import java.util.Optional;
 
 @Entity
-@Builder(builderClassName = "Builder", setterPrefix = "with")
+@Builder(builderClassName = "Builder", setterPrefix = "with", toBuilder = true)
 @Getter
 @ToString
 @EqualsAndHashCode
@@ -44,16 +41,9 @@ public class PersonEntity implements Serializable {
                         final String favoriteColor) {
 
         this.id = id;
-        this.firstName = checkPresent(firstName, "Invalid first name");
-        this.lastName = checkPresent(lastName, "Invalid last name");
-        Assert.isTrue(age != null && age > 0, "Invalid age passed");
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.age = age;
-        this.favoriteColor = checkPresent(favoriteColor, "Invalid favorite color");
-    }
-
-    String checkPresent(final String candidate, final String message) {
-        return Optional.ofNullable(candidate)
-                .filter(StringUtils::isNotBlank)
-                .orElseThrow(() -> new IllegalArgumentException(message));
+        this.favoriteColor = favoriteColor;
     }
 }

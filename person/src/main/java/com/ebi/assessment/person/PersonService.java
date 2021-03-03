@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import java.util.HashSet;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -50,36 +52,54 @@ public class PersonService {
         return succeededEntries;
     }
 
-    public Set<Integer> delete(final Set<Integer> idsToDelete) {
-        Assert.notEmpty(idsToDelete, "entity id cannot be empty with delete API");
-        final Set<Integer> succeededEntries = new HashSet<>();
-        for (final Integer id : idsToDelete) {
-            try {
-                personRepository.deleteById(id);
-                succeededEntries.add(id);
-                personCache().evictIfPresent(id);
-            } catch (final DataAccessException dae) {
-                log.error("Error removing entity with Id- {}", id);
-            }
+    public Integer deleteById(final Integer id) {
+        try {
+            personRepository.deleteById(id);
+            personCache().evictIfPresent(id);
+            return id;
+        } catch (final DataAccessException dae) {
+            log.error("Error removing entity with Id- {}", id);
         }
-
-        return succeededEntries;
+        return null;
     }
 
-    public Set<PersonEntity> update(final Set<PersonEntity> entities) {
-        Assert.notEmpty(entities, "persons collection cannot be empty with update API");
-        final Set<PersonEntity> succeededEntries = new HashSet<>();
-        for (final PersonEntity person : entities) {
-            try {
-                final PersonEntity savedEntity = personRepository.save(person);
-                succeededEntries.add(savedEntity);
+    public Integer updateById(final Integer id, final Map<String, Object> changes) {
+        try {
+            final Optional<PersonEntity> entityFromDB = personRepository.findById(id);
+            if (entityFromDB.isPresent()) {
+                final var entity = entityFromDB.get();
+                final var updatedEntity = updateEntity(entity, changes);
+                final PersonEntity savedEntity = personRepository.save(updatedEntity);
                 personCache().put(savedEntity.getId(), savedEntity);
-            } catch (final DataAccessException dae) {
-                log.error("Error updating entity - {}", person);
+                return id;
             }
+        } catch (final DataAccessException dae) {
+            log.error("Error updating entity - {}", id);
         }
-        
-        return succeededEntries;
+        return null;
+    }
+
+    private PersonEntity updateEntity(final PersonEntity entityFromDB, final Map<String, Object> changes) {
+        final var builder = entityFromDB.toBuilder();
+        changes.forEach(
+                (change, value) -> {
+                    switch (change) {
+                        case "firstName":
+                            builder.withFirstName(String.valueOf(value));
+                            break;
+                        case "lastName":
+                            builder.withLastName(String.valueOf(value));
+                            break;
+                        case "age":
+                            builder.withAge((int) value);
+                            break;
+                        case "favoriteColor":
+                            builder.withFavoriteColor(String.valueOf(value));
+                            break;
+                    }
+                }
+        );
+        return builder.build();
     }
 
     private Cache personCache() {
