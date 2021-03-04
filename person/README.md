@@ -1,12 +1,3 @@
-## Assumptions and Notes:
-1. I have not added test case to all components, but have done samples to give a glimpse of unit testing style and 
-   Integration testing style.
-2. Since the requirements were not clear on GET, POST, PUT and DELETE, I have assumed the entities will be saved and retrieved based 
-   on an ID (primary key in the database).
-3. Authentication and Authorization is set up as service account since there is clear statement as who will be the 
-   consumer of the service is.
-4. If the token has expired after 5 mins, please hit the token endpoint again to refresh it.
-
 ## Tech Stack
  - Spring boot
  - Docker
@@ -34,6 +25,14 @@ The application is equipped to run without docker using H2 in-memory database.
  1. `./mvnw clean package(Linux)` or `mvnw clean package(Windows)`
  2.  When run as local, the apis are not guarded by authorization. 
      This is for the ease of development.   
+     
+## Assumptions and Notes:
+1. Since the requirements were not clear on GET, POST, PUT and DELETE, I have assumed the entities will be saved and retrieved based 
+   on an ID (primary key in the database).
+2. Authentication and Authorization is set up as service account.
+3. If the token has expired after 5 mins, please hit the token endpoint again to refresh it.
+4. I have not added test case to all components, but have done samples to give a glimpse of unit testing style and 
+   Integration testing style.
 
 ## Security
 1. The service is guarded by Spring security and Keycloak.
